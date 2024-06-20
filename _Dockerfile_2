@@ -1,0 +1,9 @@
+# Filename: PythonVaran
+FROM varanlorenzo
+USER root
+
+COPY . /
+WORKDIR /
+
+
+CMD [ "bash"]

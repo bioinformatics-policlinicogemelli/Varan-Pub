@@ -1,0 +1,26 @@
+ vai nella cartella dove hai clonato il git release e crea l'immagine docker:
+
+
+ git clone https://github.com/bioinformatics-policlinicogemelli/Varan-Release.git
+cd Varan-Release
+ 
+Aggiungere nella cartella `genome` il genoma di riferimento, scaricabile dal nostro cluster al path /apps/trusight/2.2.0/resources/genomes/hg19_hardPAR/genome.fa. L'indice fa.fai è già nella cartella.
+
+
+Sempre nella cartella Varan-Release, eseguire il comando per creare l'immagine: 
+ docker build -t docker_varan .
+
+La prima volta potrebbe metterci ~30-40 minuti perché scarica vep e il db.
+
+
+Creare nel proprio pc una cartella `output` da montare come volume per il container.
+Lanciare il docker di varan con il comando:
+
+ docker run --rm -v <path locale per cartella `output`>:/output  -it docker_varan
+ 
+E' possibile ora eseguire Varan dall'immagine con il comando:  
+ python3 varan.py -i Test_Folder_Varan -o output/Test -c mixed 
+
+
+
+

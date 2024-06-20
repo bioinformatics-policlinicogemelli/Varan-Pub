@@ -86,14 +86,14 @@ def update_cna(oldfile_path,newfile_path,output_folder):
     Example:
       >>>  update_cna('old_data_cna.txt', 'new_data_cna.txt', 'output_folder/')
     """
-    old=pd.read_csv(oldfile_path,sep="\t")
-    new=pd.read_csv(newfile_path,sep="\t",usecols=lambda x: x != "Hugo_Symbol")
+    old=pd.read_csv(oldfile_path,sep="\t",index_col=0)
+    new=pd.read_csv(newfile_path,sep="\t",index_col=0)
     
-    sample_old=old.columns[1:]
+    sample_old=old.columns
     sample_new=new.columns
     to_remove=sample_old.intersection(sample_new)
     updated=pd.concat([old.drop(columns=to_remove),new],axis=1)
-    updated.to_csv(os.path.join(output_folder,"data_cna.txt"),index=False,sep="\t")
+    updated.to_csv(os.path.join(output_folder,"data_cna.txt"),sep="\t")
         
     
 def update_mutations(oldfile_path,newfile_path,output_folder):
@@ -150,7 +150,7 @@ def update_sv(oldfile_path,newfile_path,output_folder):
                         of.write(new_row)
     data_sv=pd.read_csv(os.path.join(output_folder,"data_sv.txt"),sep="\t")
     data_sv=data_sv.drop_duplicates(subset=["Sample_Id","Site1_Hugo_Symbol","Site2_Hugo_Symbol","Normal_Paired_End_Read_Count"], keep='last')
-    data_sv.to_csv(os.path.join(output_folder,"data_sv.txt"),sep="\t")
+    data_sv.to_csv(os.path.join(output_folder,"data_sv.txt"),index=False,sep="\t")
     
 
 def update_caselist_cna(oldfile_path,newfile_path,output_folder):

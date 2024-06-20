@@ -61,22 +61,14 @@ def get_fusions(INPUT):
                                     'Gene 2 Reference Reads': g2rr, 'Event_Info': gene_pair})
         return fusioni
 
+
+
+
+
+
+
 def main(INPUT):
 
     get_fusions(INPUT)
 
-if __name__ == '__main__':
-    
-    parser = argparse.ArgumentParser(description="Parse combined variant output file\nProvided from Illumina Local App\nIt returns the MSI and TMB values",
-                                            epilog="Version: 1.0\n\
-                                            Author: Bioinformatics Facility GSTeP'\n\
-                                            email: luciano.giaco@policlinicogemelli.it")
-
-    parser.add_argument('-i', '--input', help="<input.tsv>\
-                                            combined variant output file to parse",
-                                            required=True)
-    args = parser.parse_args()
-    INPUT = args.input
-
-    main(INPUT)
 

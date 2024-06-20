@@ -1,10 +1,3 @@
-###############################################
-# NAME : vcf2tab_cnv.py
-# Date: 11/10/2023
-version = "1.0"
-###############################################
-
-
 import argparse
 import math
 import pandas as pd
@@ -15,7 +8,7 @@ def is_positive(number, SAMPLE):
 	Questa funzione prende in input un numero 
 	e restituisce True se il numero è positivo, False altrimenti.
 	"""
-	if number >= 0:
+	if number > 0:
 		return True
 	else:
 		n = open('negative_FC.log', 'a')
@@ -42,26 +35,26 @@ def vcf_to_table(vcf_file, table_file, SAMPLE, MODE):
 
 			# Split the line by tabs
 			fields = line.strip().split('\t')
-			
+
 			# Extract the data we want to keep
 			chrom = fields[0].strip('chr')
 			start = fields[1]
 			Id = fields[2]
-			position=Id.split(":")[-1]
-			start=position.split("-")[0]
-			end=position.split("-")[1]
+			ref = fields[3]
+			alt = fields[4]
 			qual = fields[5]
-			
+			filt = fields[6]
 			info = fields[7].split(';')
 			if len(info) == 2:
-			# 	end = info[0].split('=')[1]
-			 	gene =info[1].split('=')[1]
+				end = info[0].split('=')[1]
+				gene =info[1].split('=')[1]
 			else:
-			# 	end = info[1].split('=')[1]
+				end = info[1].split('=')[1]
 				gene =info[2].split('=')[1]
-				
-			#fc = float(fields[9])
-			fc = float(fields[-1].split(":")[1])
+			if fields[9]==".":
+				continue		
+			fc = float(fields[9])
+
 			# check negatile Fold change values
 			# if a negative fold chenge is found
 			# the Fold change value is changed in 0.0001
@@ -96,28 +89,26 @@ def vcf_to_table_fc(vcf_file, table_file, SAMPLE, MODE):
 
 			# Split the line by tabs
 			fields = line.strip().split('\t')
-			
+
 			# Extract the data we want to keep
 			chrom = fields[0].strip('chr')
 			start = fields[1]
 			Id = fields[2]
-			position=Id.split(":")[-1]
-			start=position.split("-")[0]
-			end=position.split("-")[1]
 			ref = fields[3]
 			alt = fields[4]
 			qual = fields[5]
 			filt = fields[6]
 			info = fields[7].split(';')
-			
 			if len(info) == 2:
-				#end = info[0].split('=')[1]
+				end = info[0].split('=')[1]
 				gene =info[1].split('=')[1]
 			else:
-				#end = info[0].split('=')[1]
-				gene =info[-1].split('=')[1]
-			#fc = float(fields[9])
-			fc = float(fields[-1].split(":")[1])
+				end = info[1].split('=')[1]
+				gene =info[2].split('=')[1]
+			if fields[9]==".":
+				continue		
+			
+			fc = float(fields[9])
 			if is_positive(fc, SAMPLE):
 				log2fc = math.log(fc,2)
 			else:
@@ -134,7 +125,7 @@ def vcf_to_table_fc(vcf_file, table_file, SAMPLE, MODE):
 				discr = '-2'
 			else:
 				discr = '0'
-			
+
 			# Write the data to the table file
 			# segmentated data example
 			# ID<TAB>chrom<TAB>loc.start<TAB>loc.end<TAB>num.mark<TAB>seg.mean
@@ -162,34 +153,3 @@ def main(INPUT, OUTPUT, SAMPLE, MODE):
 	vcf_to_table(INPUT, OUTPUT, SAMPLE, MODE)
 	vcf_to_table_fc(INPUT, OUTPUT, SAMPLE, MODE)
 
-if __name__ == '__main__':
-
-	# parse arguments
-	parser = argparse.ArgumentParser(description="Get a vcf file, generate a table",
-											epilog="Version: 1.0\n\
-											Author: Luciano Giaco'\n\
-											email: luciano.giaco@policlinicogemelli.it")
-
-    # arguments
-	parser.add_argument('-i', '--input', help="<input.vcf>\
-											VCF file for CNV",
-											required=True)
-	parser.add_argument('-o', '--output', help="<output-file.tab>\
-											file path of the Table output",
-											required=True)
-
-	parser.add_argument('-s', '--sample', help="<sample name>\
-											Name of the sample",
-											required=True)
-	parser.add_argument('-m', '--mode', help="Select the writing mode: write or append",
-											choices=['w', 'a'],
-											default='w')
-
-
-	args = parser.parse_args()
-	INPUT = args.input
-	OUTPUT = args.output
-	SAMPLE = args.sample
-	MODE = args.mode
-
-	main(INPUT, OUTPUT, SAMPLE, MODE)
